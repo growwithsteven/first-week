@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- 제이쿼리 준비 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+  <script>
+    // 문서가 준비되면 showVideo 함수를 실행하여 비디오를 불러온다
+    $(document).ready(function () {showVideo();});
+
+    function showVideo() {
+      $.ajax({
+        type: "GET",
+        url: "/video",
+        data: {},
+        success: function (response) {
+          let videos = response['videoInfo']
+          let randomNumber = [Math.floor(Math.random() * videos.length)]
+          let videoTitle = videos[randomNumber]['videoTitle']
+          let videoThumbNail = videos[randomNumber]['videoThumbNail']
+          let videoUrl = videos[randomNumber]['videoUrl']
+          let embedUrl = videos[randomNumber]['embedUrl']
+
+          temp_html = `<div data-no = ${videoTitle}><iframe width="560" height="315" src="${embedUrl}" title="YouTube video player"
+                      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen></iframe></div>`
+                      
+          $('#player').empty().append(temp_html);
+        }
+      })
+    }
+
+    function likeVideo(videoTitle) {
+      $.ajax({
+        type: "POST",
+        url: "/video/like",
+        data: {videoTitleGive : videoTitle},
+        success: function (response) {
+        $('#player').empty().append(temp_html);
+        }
+      })
+    }
+
+    function dislikeVideo(videoTitle) {
+      $.ajax({
+        type: "POST",
+        url: "/video/dislike",
+        data: {videoTitleGive : videoTitle},
+        success: function (response) {
+          window.location.reload()
+        }
+      })
+    }
+  
+  </script>
+
+</head>
+
+<body>
+  <!-- 무작위 유튜브 영상이 삽입되는 div 영역 -->
+  <div id="player">
+  </div>
+
+
+<button>좋아요</button> <span id="like counter">0</span>
+<button>싫어요</button> <span id="like counter">0</span>
+<button onclick="showVideo()">동영상 바꾸기</button>
+
+<div>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bvSvPoQc7m0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</body>
+
+</html>
